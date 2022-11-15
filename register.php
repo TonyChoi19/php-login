@@ -1,7 +1,39 @@
 <?php
 session_start();
 
+$conn = require (__DIR__."/login/connection.php");
 include(__DIR__."/login/function.php");
+
+if (isset($_POST['submit'])) {
+    //prevent sql injection
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    
+    // Validate password strength
+    $uppercase    = preg_match('@[A-Z]@', $password);
+    $lowercase    = preg_match('@[a-z]@', $password);
+    $number       = preg_match('@[0-9]@', $password);
+    $specialchars = preg_match('@[^\w]@', $password);
+    
+    if (!is_email_avail($conn, $email)){
+        echo 'Email has been registered.';
+    }
+    elseif (strlen($username) < 6){
+        echo 'Username requies minimum length of 6 digits.';
+    }
+    elseif (!$uppercase || !$lowercase || !$number || !$specialchars || strlen($password) < 8) {
+        echo 'Password requires uppercase letter, lowercase letter, number and specialchars.';
+    } else {
+        if(is_username_avail($conn, $username)){
+            register_user($conn, $email, $username, $password);
+            header("Location: /login.php");
+            exit();
+        }else{
+            echo 'Username has been used.';
+        }
+    }
+}
 ?>
 
 
@@ -35,7 +67,7 @@ include(__DIR__."/login/function.php");
 
     <!-- form -->
     <div class="h-75 d-flex align-items-center justify-content-center">
-        <form class="d-flex flex-column align-items-center" action="../login/validation.php" method="post">
+        <form class="d-flex flex-column align-items-center" action="" method="post">
             <h1 class="h3 mb-3 font-weight-normal text-center">Register your account</h1>
             <label for="email" class="sr-only">Email address</label>
             <input name="email" type="email" id="email" class="form-control mb-1" placeholder="Email address" required autofocus>
@@ -50,17 +82,17 @@ include(__DIR__."/login/function.php");
         </form>
     </div>
 
-        <!-- Optional JavaScript -->
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-        </script>
+    <!-- Optional JS -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
 </body>
 
 </html>

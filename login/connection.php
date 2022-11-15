@@ -5,12 +5,12 @@ $dbname = "dbs";
 $username = "root";
 $password = "";
 
-$conn = mysqli_connect($dbhost,$username,$password,$dbname);
+$mysqli = new mysqli(hostname: $dbhost, username: $username, password: $password, database: $dbname);
 
 // check error
-if(!$conn)
+if($mysqli->connect_errno)
 {
 	die("failed to connect database!");
 }
-return $conn
+return $mysqli
 ?>
