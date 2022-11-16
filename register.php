@@ -3,37 +3,6 @@ session_start();
 
 $conn = require (__DIR__."/login/connection.php");
 include(__DIR__."/login/function.php");
-
-if (isset($_POST['submit'])) {
-    //prevent sql injection
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
-    
-    // Validate password strength
-    $uppercase    = preg_match('@[A-Z]@', $password);
-    $lowercase    = preg_match('@[a-z]@', $password);
-    $number       = preg_match('@[0-9]@', $password);
-    $specialchars = preg_match('@[^\w]@', $password);
-    
-    if (!is_email_avail($conn, $email)){
-        echo 'Email has been registered.';
-    }
-    elseif (strlen($username) < 6){
-        echo 'Username requies minimum length of 6 digits.';
-    }
-    elseif (!$uppercase || !$lowercase || !$number || !$specialchars || strlen($password) < 8) {
-        echo 'Password requires uppercase letter, lowercase letter, number and specialchars.';
-    } else {
-        if(is_username_avail($conn, $username)){
-            register_user($conn, $email, $username, $password);
-            header("Location: /register-success.php");
-            exit();
-        }else{
-            echo 'Username has been used.';
-        }
-    }
-}
 ?>
 
 
@@ -66,7 +35,7 @@ if (isset($_POST['submit'])) {
     </nav>
 
     <!-- form -->
-    <div class="h-75 d-flex align-items-center justify-content-center">
+    <div class="h-75 d-flex flex-column align-items-center justify-content-center">
         <form class="d-flex flex-column align-items-center" action="" method="post">
             <h1 class="h3 mb-3 font-weight-normal text-center">Register your account</h1>
             <label for="email" class="sr-only">Email address</label>
@@ -80,6 +49,39 @@ if (isset($_POST['submit'])) {
 
             <button class="btn btn-lg btn-primary m-2" type="submit" name="submit">Register</button>
         </form>
+
+        <?php
+            if (isset($_POST['submit'])) {
+                //prevent sql injection
+                $email = mysqli_real_escape_string($conn, $_POST['email']);
+                $username = mysqli_real_escape_string($conn, $_POST['username']);
+                $password = mysqli_real_escape_string($conn, $_POST['password']);
+                
+                // Validate password strength
+                $uppercase    = preg_match('@[A-Z]@', $password);
+                $lowercase    = preg_match('@[a-z]@', $password);
+                $number       = preg_match('@[0-9]@', $password);
+                $specialchars = preg_match('@[^\w]@', $password);
+                
+                if (!is_email_avail($conn, $email)){
+                    echo 'Email has been registered.';
+                }
+                elseif (strlen($username) < 6){
+                    echo 'Username requies minimum length of 6 digits.';
+                }
+                elseif (!$uppercase || !$lowercase || !$number || !$specialchars || strlen($password) < 8) {
+                    echo 'Password requires uppercase letter, lowercase letter, number and specialchars.';
+                } else {
+                    if(is_username_avail($conn, $username)){
+                        register_user($conn, $email, $username, $password);
+                        header("Location: /register-success.php");
+                        exit();
+                    }else{
+                        echo 'Username has been used.';
+                    }
+                }
+            }
+        ?>
     </div>
 
     <!-- Optional JS -->
