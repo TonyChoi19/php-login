@@ -27,7 +27,7 @@ if (isset($_POST['submit'])) {
     } else {
         if(is_username_avail($conn, $username)){
             register_user($conn, $email, $username, $password);
-            header("Location: /login.php");
+            header("Location: /register-success.php");
             exit();
         }else{
             echo 'Username has been used.';

@@ -1,16 +1,5 @@
 <?php
 session_start();
-include(__DIR__."/login/function.php");
-
-$conn = require (__DIR__."/login/connection.php");
-$user = is_login($conn);
-
-if(isset($_POST['sign-out'])) {
-    session_start();
-    session_destroy();
-    header("Location: /");
-    exit;
-}
 ?>
 
 <!doctype html>
@@ -28,45 +17,24 @@ if(isset($_POST['sign-out'])) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="stylesheet" href="/css/index.css">
-    <title>Whiteboard Forum</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <title>Whiteboard Forum-SignIn</title>
 </head>
 
 <body>
     <!-- Nav bar -->
-    <nav class="navbar navbar-light bg-light d-flex justify-content-between">
+    <nav class="navbar navbar-light d-flex justify-content-between">
         <a class="navbar-brand d-flex flex-rows align-items-center" href="/">
             <img src="/images/icon.png" width="50" height="50" class="d-inline-block align-center p-2" alt="">
             <div style="font-weight: 500">Whiteboard Forum</div>
         </a>
-        <?php if (!empty($user) && isset($user)) :?>
-            <div class="d-flex flex-rows">
-                <a class="btn btn-primary m-1" href="/forum.php" role="button">Forum</a>
-                <form method="post">
-                    <input class="btn btn-primary m-1" type="submit" name="sign-out" value="Sign out">
-                </form>
-            </div>
-        <?php else :?>
-            <div>
-                <a class="btn btn-primary" href="/register.php" role="button">Register</a>
-                <a class="btn btn-primary" href="/login.php" role="button">Sign In</a>
-            </div>
-        <?php endif; ?>
     </nav>
 
-    <!-- Main content -->
-    <main class="h-100 text-white d-flex flex-column align-items-center justify-content-center">
-        <h1 class="cover-heading">Post your thoughts, Fill the white.</h1>
-        <p class="lead">Whiteboard Forum is a forum to share, to discover...</p>
-        <p class="lead">Login for more</p>
-    </main>
 
-    <!-- footer -->
-    <footer class="cus_footer text-center text-white p-1">
-        <div class="inner">
-            <p>@COMP3335 Project</p>
-        </div>
-    </footer>
+    <div class="h-75 d-flex flex-column align-items-center justify-content-center">
+            <h1 class="h3 mb-3 font-weight-normal text-center">Register successfully!</h1>
+            <a href="/login.php" class="link-primary">Click to sign in</a>
+    </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

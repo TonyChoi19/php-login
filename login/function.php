@@ -1,4 +1,5 @@
 <?php
+
 function is_login($conn)
 {
 	if(isset($_SESSION['user_id']))
@@ -47,4 +48,17 @@ function register_user($conn, $email, $username, $password){
 	$hashed_password = password_hash($password, PASSWORD_BCRYPT);
 	$stmt = $conn->prepare("INSERT INTO user (email, username, password) VALUES (?,?,?)");
 	$stmt -> execute(array($email, $username, $hashed_password));
+}
+
+function get_user($conn, $email){
+	$stmt = $conn->prepare("SELECT * FROM user WHERE email = ?");
+	$stmt -> bind_param('s', $email) ;
+	$stmt -> execute();
+	$result = $stmt->get_result();
+	if($result && mysqli_num_rows($result) > 0)
+		{
+			$user = $result->fetch_assoc();
+			return $user;
+		}
+	return null;
 }

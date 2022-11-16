@@ -1,3 +1,36 @@
+<?php
+    session_start();
+    include(__DIR__."/login/function.php");
+
+    $conn = require (__DIR__."/login/connection.php");
+    $user = is_login($conn);
+
+    //redirect to main page if user has logged in
+    if(!empty($user)){
+        header("Location: /");
+        exit();
+    }
+
+    if (isset($_POST['submit'])) {
+        //prevent sql injection
+        $email = mysqli_real_escape_string($conn, $_POST['email']);
+        $password = mysqli_real_escape_string($conn, $_POST['password']);
+        $user = get_user($conn, $email);
+        if ($user){
+            if(password_verify($password, $user["password"])){
+                session_start();
+                session_regenerate_id();
+                $_SESSION["user_id"] = $user["user_id"];
+                header("Location: index.php");
+                exit;
+            }else{
+                echo"Invalid login";
+            }
+        }
+    }
+?>
+
+
 <!doctype html>
 <html lang="en">
 
@@ -28,19 +61,22 @@
 
 
     <div class="h-75 d-flex align-items-center justify-content-center">
-        <form class="form-signin">
+        <form class="form-signin" action="" method="post">
             <h1 class="h3 mb-3 font-weight-normal text-center">Please sign in</h1>
+            
             <label for="inputEmail" class="sr-only">Email address</label>
-            <input type="email" id="inputEmail" class="form-control mb-1" placeholder="Email address" required
+            <input name="email" type="email" id="inputEmail" class="form-control mb-1" placeholder="Email address" required
                 autofocus>
+            
             <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" id="inputPassword" class="form-control mb-1" placeholder="Password" required>
+            <input name="password" type="password" id="inputPassword" class="form-control mb-1" placeholder="Password" required>
+            
             <label for="inputOTP" class="sr-only">OTP</label>
-            <input type="otp" id="inputOTP" class="form-control mb-1" placeholder="OTP" required>
+            <input name="otp" type="otp" id="inputOTP" class="form-control mb-1" placeholder="OTP" required>
             <a href="/register.php" class="link-primary">Register</a>
             <div class="d-flex flex-row p-3">
-                <button class="btn btn-lg btn-primary m-2" type="submit">Sign in</button>
-                <button class="btn btn-lg btn-primary m-2" type="submit">Send OTP</button>
+                <button class="btn btn-lg btn-primary m-2" type="submit" name="submit">Sign in</button>
+                <button class="btn btn-lg btn-primary m-2" type="submit" name="otp">Send OTP</button>
             </div>
         </form>
     </div>
