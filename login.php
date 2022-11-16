@@ -10,24 +10,6 @@
         header("Location: /");
         exit();
     }
-
-    if (isset($_POST['submit'])) {
-        //prevent sql injection
-        $email = mysqli_real_escape_string($conn, $_POST['email']);
-        $password = mysqli_real_escape_string($conn, $_POST['password']);
-        $user = get_user($conn, $email);
-        if ($user){
-            if(password_verify($password, $user["password"])){
-                session_start();
-                session_regenerate_id();
-                $_SESSION["user_id"] = $user["user_id"];
-                header("Location: index.php");
-                exit;
-            }else{
-                echo"Invalid login";
-            }
-        }
-    }
 ?>
 
 
@@ -60,7 +42,7 @@
     </nav>
 
 
-    <div class="h-75 d-flex align-items-center justify-content-center">
+    <div class="h-75 d-flex flex-column align-items-center justify-content-center">
         <form class="form-signin" action="" method="post">
             <h1 class="h3 mb-3 font-weight-normal text-center">Please sign in</h1>
             
@@ -79,6 +61,26 @@
                 <button class="btn btn-lg btn-primary m-2" type="submit" name="otp">Send OTP</button>
             </div>
         </form>
+
+        <?php
+            if (isset($_POST['submit'])) {
+                //prevent sql injection
+                $email = mysqli_real_escape_string($conn, trim($_POST['email']));
+                $password = mysqli_real_escape_string($conn, trim($_POST['password']));
+                $user = get_user($conn, $email);
+                if ($user){
+                    if(password_verify($password, $user["password"])){
+                        session_start();
+                        session_regenerate_id();
+                        $_SESSION["user_id"] = $user["user_id"];
+                        header("Location: index.php");
+                        exit;
+                    }else{
+                        echo"Invalid login";
+                    }
+                }
+            }
+        ?>
     </div>
 
     <!-- Optional JavaScript -->

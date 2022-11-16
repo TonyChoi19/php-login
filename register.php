@@ -53,9 +53,9 @@ include(__DIR__."/login/function.php");
         <?php
             if (isset($_POST['submit'])) {
                 //prevent sql injection
-                $email = mysqli_real_escape_string($conn, $_POST['email']);
-                $username = mysqli_real_escape_string($conn, $_POST['username']);
-                $password = mysqli_real_escape_string($conn, $_POST['password']);
+                $email = mysqli_real_escape_string($conn, trim($_POST['email']));
+                $username = mysqli_real_escape_string($conn, trim($_POST['username']));
+                $password = mysqli_real_escape_string($conn, trim($_POST['password']));
                 
                 // Validate password strength
                 $uppercase    = preg_match('@[A-Z]@', $password);
