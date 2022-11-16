@@ -1,4 +1,9 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require $_SERVER['DOCUMENT_ROOT'].'/libraries/PHPMailer-master/src/Exception.php';
+require $_SERVER['DOCUMENT_ROOT'].'/libraries/PHPMailer-master/src/PHPMailer.php';
+require $_SERVER['DOCUMENT_ROOT'].'/libraries/PHPMailer-master/src/SMTP.php';
 
 function is_login($conn)
 {
@@ -61,4 +66,34 @@ function get_user($conn, $email){
 			return $user;
 		}
 	return null;
+}
+
+function set_OTP($conn, $email, $otp){
+	$stmt = $conn->prepare("UPDATE user SET otp = ? WHERE email = ?");
+	$stmt -> execute(array($otp, $email));
+}
+
+
+function send_OTP($conn, $email, $otp){
+	$mail = new PHPMailer();
+	$mail->IsSMTP();
+	$mail->Mailer = "smtp";
+	$mail->SMTPAuth   = true;
+	$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+	$mail->Port       = 465;
+	$mail->Host       = "smtp.gmail.com";
+	$mail->Username   = "whiteboard3335@gmail.com";
+	$mail->Password   = "sbtozwxryqreuicq";
+	$mail->IsHTML(true);
+	$mail->AddAddress("$email");
+	$mail->SetFrom("no-reply@whiteboard.com");
+	$mail->Subject = "Whiteboard Forum - OTP";
+	$message_body = "One Time Password for Whiteboard login:<br/><br/>" . $otp;
+	$mail->MsgHTML($message_body);
+	$result = $mail->Send();
+	if($result){
+		return true;
+	}else{
+		return false;
+	}
 }

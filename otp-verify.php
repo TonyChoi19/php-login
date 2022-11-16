@@ -10,8 +10,22 @@
         header("Location: /");
         exit();
     }
-?>
 
+    //redirect to main page if user has not passed previous stage
+    if(empty($_SESSION["email"])){
+        header("Location: /");
+        exit();
+    }
+
+    //send OTP
+    if (isset($_GET['send'])) {
+        $otp = rand(100000,999999);
+        set_OTP($conn, $_SESSION["email"], $otp);
+        send_OTP($conn, $_SESSION["email"], $otp);
+        header("Location: /otp-verify.php");
+        exit;
+    }
+?>
 
 <!doctype html>
 <html lang="en">
@@ -29,7 +43,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="/css/login.css">
-    <title>Whiteboard Forum-SignIn</title>
+    <title>Whiteboard Forum-verify</title>
 </head>
 
 <body>
@@ -44,39 +58,30 @@
 
     <div class="h-75 d-flex flex-column align-items-center justify-content-center">
         <form class="form-signin" action="" method="post">
-            <h1 class="h3 mb-3 font-weight-normal text-center">Please sign in</h1>
+            <h1 class="h3 mb-3 font-weight-normal text-center">Please input OTP</h1>
             
-            <label for="inputEmail" class="sr-only">Email address</label>
-            <input name="email" type="email" id="inputEmail" class="form-control mb-1" placeholder="Email address" required
-                autofocus>
-            
-            <label for="inputPassword" class="sr-only">Password</label>
-            <input name="password" type="password" id="inputPassword" class="form-control mb-1" placeholder="Password" required>
-            
-            <!-- <label for="inputOTP" class="sr-only">OTP</label>
-            <input name="otp" type="otp" id="inputOTP" class="form-control mb-1" placeholder="OTP"> -->
-            <a href="/register.php" class="link-primary">Register</a>
-            <div class="d-flex flex-column align-items-center justify-content-center">
-                <button class="btn btn-lg btn-primary m-2" type="submit" name="submit">Sign in</button>
-                <!-- <form method="post">
-                    <input class="btn btn-lg btn-primary m-2" type="submit" name="opt" value="Send OTP">
-                </form> -->
+            <label for="inputOTP" class="sr-only">OTP</label>
+            <input name="otp" type="otp" id="inputOTP" class="form-control mb-1" placeholder="OTP" required autofocus>
+            <a href="/otp-verify.php?send=true" class="link-primary">Resend OTP</a>
+            <div class="d-flex flex-column align-items-center justify-content-center p-3">
+                <button class="btn btn-lg btn-primary" type="submit" name="verify">Verify</button>
             </div>
         </form>
 
         <?php
-            if (isset($_POST['submit'])) {
+            if (isset($_POST['verify'])) {
                 //prevent sql injection
-                $email = mysqli_real_escape_string($conn, trim($_POST['email']));
-                $password = mysqli_real_escape_string($conn, trim($_POST['password']));
-                $user = get_user($conn, $email);
+                $otp = mysqli_real_escape_string($conn, trim($_POST['otp']));
+                $user = get_user($conn, $_SESSION["email"]);
                 if ($user){
-                    if(password_verify($password, $user["password"])){
-                        $_SESSION["email"] = $user["email"];
-                        header("Location: otp-verify.php?send=true");
+                    if($otp == $user["otp"]){
+                        session_start();
+                        session_regenerate_id();
+                        $_SESSION["user_id"] = $user["user_id"];
+                        header("Location: index.php");
                         exit;
                     }else{
-                        echo"Invalid login";
+                        echo "Invalid OTP";
                     }
                 }
             }
