@@ -82,8 +82,8 @@ function send_OTP($conn, $email, $otp){
 	$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
 	$mail->Port       = 465;
 	$mail->Host       = "smtp.gmail.com";
-	$mail->Username   = "whiteboard3335@gmail.com";
-	$mail->Password   = "sbtozwxryqreuicq";
+	$mail->Username   = "[Your Gmail]";
+	$mail->Password   = "[Gmail password]";
 	$mail->IsHTML(true);
 	$mail->AddAddress("$email");
 	$mail->SetFrom("no-reply@whiteboard.com");
